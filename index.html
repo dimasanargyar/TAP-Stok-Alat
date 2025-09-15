@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Monitoring Stok Barang</title>
+  <title>Monitoring Stok Alat</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -40,16 +40,16 @@
   <!-- APP CONTENT (TERSEMBUNYI SEBELUM LOGIN) -->
   <div id="app" style="display:none;">
     <div class="card">
-      <h1>Monitoring Stok Barang</h1>
+      <h1>Monitoring Stok Alat</h1>
 
       <div class="grid">
         <div>
-          <label for="inputNama">Nama Barang</label>
-          <input type="text" id="inputNama" placeholder="Nama barang" />
+          <label for="inputNama">Nama Alat</label>
+          <input type="text" id="inputNama" placeholder="Nama alat" />
         </div>
         <div>
           <label for="inputSpesifikasi">Spesifikasi</label>
-          <input type="text" id="inputSpesifikasi" placeholder="Spesifikasi barang" />
+          <input type="text" id="inputSpesifikasi" placeholder="Spesifikasi alat" />
         </div>
         <div>
           <label for="inputJumlah">Jumlah (+/-)</label>
@@ -73,11 +73,11 @@
 
     <div class="card">
       <h2>Daftar Stok</h2>
-      <input type="text" id="searchStok" placeholder="Cari nama barang" />
+      <input type="text" id="searchStok" placeholder="Cari nama alat" />
       <table id="tabelStok">
         <thead>
           <tr>
-            <th>Nama Barang</th>
+            <th>Nama Alat</th>
             <th>Spesifikasi</th>
             <th>Jumlah</th>
             <th>Satuan</th>
@@ -111,7 +111,7 @@
           <tr>
             <th>No</th>
             <th>Tanggal</th>
-            <th>Nama Barang</th>
+            <th>Nama Alat</th>
             <th>Spesifikasi</th>
             <th>Perubahan</th>
             <th>Sisa</th>
@@ -127,9 +127,9 @@
   <!-- Modal Edit -->
   <div id="editModal" class="modal" style="display:none;">
     <div class="modal-content card" role="dialog" aria-modal="true">
-      <h2>Edit Barang</h2>
+      <h2>Edit Alat</h2>
       <div>
-        <label for="editNama">Nama Barang</label>
+        <label for="editNama">Nama Alat</label>
         <input type="text" id="editNama" />
       </div>
       <div>
@@ -145,7 +145,7 @@
         <input type="text" id="editSatuan" />
       </div>
       <div class="actions">
-        <button id="btnUpdateBarang">Update</button>
+        <button id="btnUpdateAlat">Update</button>
         <button id="btnCancelEdit" class="smallBtn secondary">Batal</button>
       </div>
     </div>
@@ -158,3 +158,4 @@
   <script type="module" src="script.js"></script>
 </body>
 </html>
+
