@@ -1,10 +1,11 @@
+// script-alat.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
 import { getDatabase, ref, set, push, remove, onValue, update }
   from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
 /* =======================================================
-   FIREBASE CONFIG
+   FIREBASE CONFIG (pakai config awal Anda - ganti bila perlu)
 ======================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyCaOQPlCQ8oBNp1H2I1Frf6dN5lUmzBGN4",
@@ -22,11 +23,11 @@ const analytics = getAnalytics(app);
 const db = getDatabase(app);
 
 /* =======================================================
-   LOGIN CONFIG
+   LOGIN CONFIG (sama persis)
 ======================================================= */
 const CREDENTIALS = {
   username: "admin",
-  password: "alattap"
+  password: "gudangtap"
 };
 
 let currentRole = null; // 'admin' | 'guest'
@@ -43,6 +44,7 @@ const btnGuest = document.getElementById("btnGuest");
 const togglePassword = document.getElementById("togglePassword");
 
 const inputNama = document.getElementById("inputNama");
+const inputSpesifikasi = document.getElementById("inputSpesifikasi");
 const inputJumlah = document.getElementById("inputJumlah");
 const inputSatuan = document.getElementById("inputSatuan");
 const inputTanggal = document.getElementById("inputTanggal");
@@ -58,6 +60,7 @@ const btnExportRiwayat = document.getElementById("btnExportRiwayat");
 const bulanExport = document.getElementById("bulanExport");
 
 const editNama = document.getElementById("editNama");
+const editSpesifikasi = document.getElementById("editSpesifikasi");
 const editJumlah = document.getElementById("editJumlah");
 const editSatuan = document.getElementById("editSatuan");
 const btnUpdateBarang = document.getElementById("btnUpdateBarang");
@@ -67,8 +70,8 @@ const editModal = document.getElementById("editModal");
 /* =======================================================
    STATE
 ======================================================= */
-let stokBarang = {};
-let riwayat = [];
+let stokAlat = {};    // object { nama: { jumlah, satuan, spesifikasi } }
+let riwayatAlat = []; // array of { id, tanggal, nama, spesifikasi, perubahan, sisa, satuan }
 let editMode = null; // { namaLama }
 
 /* =======================================================
@@ -108,13 +111,14 @@ function afterLogin() {
 function applyRoleUI() {
   const isGuest = currentRole === "guest";
   inputNama.disabled = isGuest;
+  inputSpesifikasi.disabled = isGuest;
   inputJumlah.disabled = isGuest;
   inputSatuan.disabled = isGuest;
   inputTanggal.disabled = isGuest;
   btnSimpan.disabled = isGuest;
   btnResetForm.disabled = isGuest;
 
-  // ✅ Export tetap tersedia untuk tamu
+  // Export tetap tersedia untuk tamu
   btnExportStok.style.display = "inline-flex";
   btnExportRiwayat.style.display = "inline-flex";
   bulanExport.disabled = false;
@@ -124,7 +128,7 @@ function applyRoleUI() {
 }
 
 /* =======================================================
-   SIMPAN DATA
+   SIMPAN DATA (stok_alat & riwayat_alat)
 ======================================================= */
 btnSimpan.addEventListener("click", () => {
   if (currentRole === "guest") {
@@ -133,26 +137,28 @@ btnSimpan.addEventListener("click", () => {
   }
 
   const nama = inputNama.value.trim();
+  const spesifikasi = inputSpesifikasi.value.trim() || "-";
   const jumlah = Number(inputJumlah.value);
   const satuan = inputSatuan.value.trim() || "-";
   const tanggal = inputTanggal.value;
 
-  if (!nama) return alert("Nama barang wajib diisi.");
+  if (!nama) return alert("Nama alat wajib diisi.");
   if (!tanggal) return alert("Tanggal wajib diisi.");
   if (Number.isNaN(jumlah)) return alert("Jumlah harus angka.");
   if (jumlah === 0) return alert("Jumlah tidak boleh 0.");
 
-  const stokLama = stokBarang[nama]?.jumlah || 0;
+  const stokLama = stokAlat[nama]?.jumlah || 0;
   const sisaBaru = stokLama + jumlah;
   if (jumlah < 0 && sisaBaru < 0) {
     return alert(`Stok tidak cukup. Stok saat ini: ${stokLama}`);
   }
 
-  set(ref(db, `stok/${nama}`), { jumlah: sisaBaru, satuan })
+  set(ref(db, `stok_alat/${nama}`), { jumlah: sisaBaru, satuan, spesifikasi })
     .then(() => {
-      return push(ref(db, "riwayat"), {
+      return push(ref(db, "riwayat_alat"), {
         tanggal,
         nama,
+        spesifikasi,
         perubahan: jumlah,
         sisa: sisaBaru,
         satuan
@@ -172,6 +178,7 @@ btnResetForm.addEventListener("click", () => {
 
 function resetFormInputs() {
   inputNama.value = "";
+  inputSpesifikasi.value = "";
   inputJumlah.value = "";
   inputSatuan.value = "";
   inputTanggal.value = "";
@@ -184,31 +191,34 @@ function renderStok() {
   tabelStokBody.innerHTML = "";
 
   const key = (searchStok.value || "").trim().toLowerCase();
-  const filtered = Object.keys(stokBarang).filter(nama =>
-    nama.toLowerCase().includes(key)
-  );
+  const filtered = Object.keys(stokAlat).filter(nama => {
+    const s = (stokAlat[nama]?.spesifikasi || "").toLowerCase();
+    return nama.toLowerCase().includes(key) || s.includes(key);
+  });
 
   if (filtered.length === 0) {
-    tabelStokBody.innerHTML = `<tr><td colspan="4">Tidak ada stok</td></tr>`;
+    tabelStokBody.innerHTML = `<tr><td colspan="5">Tidak ada stok</td></tr>`;
     return;
   }
 
   const isGuest = currentRole === "guest";
 
   filtered.sort().forEach(nama => {
-    const item = stokBarang[nama];
-    const jumlah = item?.jumlah ?? item ?? 0;
+    const item = stokAlat[nama];
+    const jumlah = item?.jumlah ?? 0;
     const satuan = item?.satuan ?? "-";
+    const spesifikasi = item?.spesifikasi ?? "-";
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${escapeHtml(nama)}</td>
+      <td>${escapeHtml(spesifikasi)}</td>
       <td>${jumlah}</td>
       <td>${escapeHtml(satuan)}</td>
       <td>
         ${isGuest ? "" : `
-          <button class="smallBtn" data-edit-barang="${escapeHtml(nama)}">Edit</button>
-          <button class="smallBtn" data-hapus-barang="${escapeHtml(nama)}">Hapus</button>
+          <button class="smallBtn" data-edit-alat="${escapeHtml(nama)}">Edit</button>
+          <button class="smallBtn" data-hapus-alat="${escapeHtml(nama)}">Hapus</button>
         `}
       </td>
     `;
@@ -217,15 +227,15 @@ function renderStok() {
 
   if (!currentRole || currentRole === "guest") return;
 
-  document.querySelectorAll("[data-hapus-barang]").forEach(btn => {
+  document.querySelectorAll("[data-hapus-alat]").forEach(btn => {
     btn.addEventListener("click", () => {
-      const namaBarang = btn.getAttribute("data-hapus-barang");
-      if (confirm(`Yakin ingin menghapus barang "${namaBarang}"?`)) {
-        remove(ref(db, `stok/${namaBarang}`));
-        onValue(ref(db, "riwayat"), snapshot => {
+      const namaAlat = btn.getAttribute("data-hapus-alat");
+      if (confirm(`Yakin ingin menghapus alat "${namaAlat}"?`)) {
+        remove(ref(db, `stok_alat/${namaAlat}`));
+        onValue(ref(db, "riwayat_alat"), snapshot => {
           snapshot.forEach(child => {
-            if (child.val().nama === namaBarang) {
-              remove(ref(db, `riwayat/${child.key}`));
+            if (child.val().nama === namaAlat) {
+              remove(ref(db, `riwayat_alat/${child.key}`));
             }
           });
         }, { onlyOnce: true });
@@ -233,14 +243,15 @@ function renderStok() {
     });
   });
 
-  document.querySelectorAll("[data-edit-barang]").forEach(btn => {
+  document.querySelectorAll("[data-edit-alat]").forEach(btn => {
     btn.addEventListener("click", () => {
-      const namaBarang = btn.getAttribute("data-edit-barang");
-      const item = stokBarang[namaBarang];
-      editNama.value = namaBarang;
-      editJumlah.value = item?.jumlah ?? item ?? 0;
+      const namaAlat = btn.getAttribute("data-edit-alat");
+      const item = stokAlat[namaAlat];
+      editNama.value = namaAlat;
+      editSpesifikasi.value = item?.spesifikasi ?? "-";
+      editJumlah.value = item?.jumlah ?? 0;
       editSatuan.value = item?.satuan ?? "-";
-      editMode = { namaLama: namaBarang };
+      editMode = { namaLama: namaAlat };
       editModal.style.display = "flex";
     });
   });
@@ -250,15 +261,15 @@ function renderStok() {
    RENDER RIWAYAT
 ======================================================= */
 function renderRiwayat() {
-  let data = [...riwayat];
+  let data = [...riwayatAlat];
   const key = (searchBar.value || "").trim().toLowerCase();
   if (key) {
-    data = data.filter(it => it.nama.toLowerCase().includes(key) || (it.tanggal || "").includes(key));
+    data = data.filter(it => it.nama.toLowerCase().includes(key) || (it.tanggal || "").includes(key) || (it.spesifikasi || "").toLowerCase().includes(key));
   }
 
   tabelRiwayatBody.innerHTML = "";
   if (data.length === 0) {
-    tabelRiwayatBody.innerHTML = `<tr><td colspan="7">Tidak ada riwayat</td></tr>`;
+    tabelRiwayatBody.innerHTML = `<tr><td colspan="8">Tidak ada riwayat</td></tr>`;
     return;
   }
 
@@ -270,6 +281,7 @@ function renderRiwayat() {
       <td>${idx + 1}</td>
       <td>${escapeHtml(it.tanggal)}</td>
       <td>${escapeHtml(it.nama)}</td>
+      <td>${escapeHtml(it.spesifikasi ?? "-")}</td>
       <td>${it.perubahan > 0 ? "+" + it.perubahan : it.perubahan}</td>
       <td>${it.sisa}</td>
       <td>${escapeHtml(it.satuan ?? "-")}</td>
@@ -284,21 +296,21 @@ function renderRiwayat() {
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-id");
       if (id && confirm(`Yakin ingin menghapus riwayat ini?`)) {
-        remove(ref(db, `riwayat/${id}`));
+        remove(ref(db, `riwayat_alat/${id}`));
       }
     });
   });
 }
 
 /* =======================================================
-   LISTENER REALTIME
+   LISTENER REALTIME (stok_alat & riwayat_alat)
 ======================================================= */
-onValue(ref(db, "stok"), snapshot => {
-  stokBarang = snapshot.val() || {};
+onValue(ref(db, "stok_alat"), snapshot => {
+  stokAlat = snapshot.val() || {};
   renderStok();
 });
 
-onValue(ref(db, "riwayat"), snapshot => {
+onValue(ref(db, "riwayat_alat"), snapshot => {
   const arr = [];
   snapshot.forEach(child => {
     arr.push({ id: child.key, ...child.val() });
@@ -307,7 +319,7 @@ onValue(ref(db, "riwayat"), snapshot => {
     if (a.tanggal === b.tanggal) return a.id < b.id ? 1 : -1;
     return (a.tanggal < b.tanggal ? 1 : -1);
   });
-  riwayat = arr;
+  riwayatAlat = arr;
   renderRiwayat();
 });
 
@@ -322,27 +334,30 @@ btnUpdateBarang.addEventListener("click", () => {
 
   const { namaLama } = editMode;
   const namaBaru = editNama.value.trim();
+  const spesifikasiBaru = editSpesifikasi.value.trim() || "-";
   const jumlahBaru = Number(editJumlah.value);
   const satuanBaru = editSatuan.value.trim() || "-";
   const tanggal = todayISO();
 
-  if (!namaBaru) return alert("Nama barang wajib diisi.");
+  if (!namaBaru) return alert("Nama alat wajib diisi.");
   if (Number.isNaN(jumlahBaru)) return alert("Jumlah harus angka.");
   if (jumlahBaru < 0) return alert("Jumlah tidak boleh negatif.");
 
-  remove(ref(db, `stok/${namaLama}`))
+  remove(ref(db, `stok_alat/${namaLama}`))
     .then(() => {
-      return set(ref(db, `stok/${namaBaru}`), {
+      return set(ref(db, `stok_alat/${namaBaru}`), {
         jumlah: jumlahBaru,
-        satuan: satuanBaru
+        satuan: satuanBaru,
+        spesifikasi: spesifikasiBaru
       });
     })
     .then(() => {
-      onValue(ref(db, "riwayat"), snapshot => {
+      onValue(ref(db, "riwayat_alat"), snapshot => {
         snapshot.forEach(child => {
           if (child.val().nama === namaLama) {
-            update(ref(db, `riwayat/${child.key}`), {
+            update(ref(db, `riwayat_alat/${child.key}`), {
               nama: namaBaru,
+              spesifikasi: spesifikasiBaru,
               sisa: jumlahBaru,
               satuan: satuanBaru
             });
@@ -369,16 +384,16 @@ btnCancelEdit.addEventListener("click", () => {
    EXPORT XLS
 ======================================================= */
 btnExportStok.addEventListener("click", () => {
-  const rows = [["Nama Barang", "Jumlah", "Satuan"]];
-  Object.keys(stokBarang).sort().forEach(nama => {
-    const item = stokBarang[nama];
-    rows.push([nama, item?.jumlah ?? item ?? 0, item?.satuan ?? "-"]);
+  const rows = [["Nama Alat", "Spesifikasi", "Jumlah", "Satuan"]];
+  Object.keys(stokAlat).sort().forEach(nama => {
+    const item = stokAlat[nama];
+    rows.push([nama, item?.spesifikasi ?? "-", item?.jumlah ?? 0, item?.satuan ?? "-"]);
   });
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(rows);
-  XLSX.utils.book_append_sheet(wb, ws, "Stok");
-  XLSX.writeFile(wb, `stok_${todayCompact()}.xls`);
+  XLSX.utils.book_append_sheet(wb, ws, "Stok Alat");
+  XLSX.writeFile(wb, `stok_alat_${todayCompact()}.xls`);
 });
 
 btnExportRiwayat.addEventListener("click", () => {
@@ -387,15 +402,15 @@ btnExportRiwayat.addEventListener("click", () => {
     alert("Pilih bulan terlebih dahulu.");
     return;
   }
-  const rows = [["Tanggal", "Nama Barang", "Perubahan", "Sisa", "Satuan"]];
-  riwayat
+  const rows = [["Tanggal", "Nama Alat", "Spesifikasi", "Perubahan", "Sisa", "Satuan"]];
+  riwayatAlat
     .filter(it => (it.tanggal || "").startsWith(bulan))
-    .forEach(it => rows.push([it.tanggal, it.nama, it.perubahan, it.sisa, it.satuan ?? "-"]));
+    .forEach(it => rows.push([it.tanggal, it.nama, it.spesifikasi ?? "-", it.perubahan, it.sisa, it.satuan ?? "-"]));
 
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.aoa_to_sheet(rows);
-  XLSX.utils.book_append_sheet(wb, ws, "Riwayat");
-  XLSX.writeFile(wb, `riwayat_${bulan}.xls`);
+  XLSX.utils.book_append_sheet(wb, ws, "Riwayat Alat");
+  XLSX.writeFile(wb, `riwayat_alat_${bulan}.xls`);
 });
 
 /* =======================================================
@@ -419,5 +434,4 @@ function escapeHtml(str) {
     '&': '&amp;', '<': '&lt;', '>': '&gt;',
     '"': '&quot;', "'": '&#039;'
   })[m]);
-
 }
