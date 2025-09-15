@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Monitoring Stok Alat</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monitoring Stok Barang</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,14 +13,14 @@
     <h1>Masuk</h1>
     <div class="grid">
       <div>
-        <label>Username</label>
+        <label for="loginUsername">Username</label>
         <input type="text" id="loginUsername" placeholder="Username" />
       </div>
       <div>
-        <label>Password</label>
+        <label for="loginPassword">Password</label>
         <div style="position:relative;">
           <input type="password" id="loginPassword" placeholder="Password" />
-          <button type="button" id="togglePassword" 
+          <button type="button" id="togglePassword"
             style="position:absolute; right:8px; top:50%; transform:translateY(-50%);
                    background:none; border:none; cursor:pointer; font-size:12px; color:#1976d2;">
             🔴
@@ -40,27 +40,23 @@
   <!-- APP CONTENT (TERSEMBUNYI SEBELUM LOGIN) -->
   <div id="app" style="display:none;">
     <div class="card">
-      <h1>Monitoring Stok Alat</h1>
+      <h1>Monitoring Stok Barang</h1>
 
       <div class="grid">
         <div>
-          <label>Nama Alat</label>
-          <input type="text" id="inputNama" placeholder="Nama alat" />
+          <label for="inputNama">Nama Barang</label>
+          <input type="text" id="inputNama" placeholder="Nama barang" />
         </div>
         <div>
-          <label>Spesifikasi</label>
-          <input type="text" id="inputSpesifikasi" placeholder="Spesifikasi / detail" />
-        </div>
-        <div>
-          <label>Jumlah (+/-)</label>
+          <label for="inputJumlah">Jumlah (+/-)</label>
           <input type="number" id="inputJumlah" placeholder="Jumlah" />
         </div>
         <div>
-          <label>Satuan</label>
-          <input type="text" id="inputSatuan" placeholder="Contoh: unit, set" />
+          <label for="inputSatuan">Satuan</label>
+          <input type="text" id="inputSatuan" placeholder="Contoh: pcs, box, kg" />
         </div>
         <div>
-          <label>Tanggal</label>
+          <label for="inputTanggal">Tanggal</label>
           <input type="date" id="inputTanggal" />
         </div>
       </div>
@@ -72,13 +68,12 @@
     </div>
 
     <div class="card">
-      <h2>Daftar Stok Alat</h2>
-      <input type="text" id="searchStok" placeholder="Cari nama / spesifikasi" />
+      <h2>Daftar Stok</h2>
+      <input type="text" id="searchStok" placeholder="Cari nama barang" />
       <table id="tabelStok">
         <thead>
           <tr>
-            <th>Nama Alat</th>
-            <th>Spesifikasi</th>
+            <th>Nama Barang</th>
             <th>Jumlah</th>
             <th>Satuan</th>
             <th>Aksi</th>
@@ -93,11 +88,11 @@
 
     <div class="card">
       <h2>Riwayat Perubahan</h2>
-      <input type="text" id="searchBar" placeholder="Cari nama / tanggal / spesifikasi" />
+      <input type="text" id="searchBar" placeholder="Cari nama / tanggal" />
 
       <div class="grid" style="margin-top:8px;">
         <div>
-          <label>Filter Bulan (Riwayat)</label>
+          <label for="bulanExport">Filter Bulan (Riwayat)</label>
           <input type="month" id="bulanExport" />
         </div>
         <div>
@@ -111,8 +106,7 @@
           <tr>
             <th>No</th>
             <th>Tanggal</th>
-            <th>Nama Alat</th>
-            <th>Spesifikasi</th>
+            <th>Nama Barang</th>
             <th>Perubahan</th>
             <th>Sisa</th>
             <th>Satuan</th>
@@ -126,22 +120,18 @@
 
   <!-- Modal Edit -->
   <div id="editModal" class="modal" style="display:none;">
-    <div class="modal-content card">
-      <h2>Edit Alat</h2>
+    <div class="modal-content card" role="dialog" aria-modal="true">
+      <h2>Edit Barang</h2>
       <div>
-        <label>Nama Alat</label>
+        <label for="editNama">Nama Barang</label>
         <input type="text" id="editNama" />
       </div>
       <div>
-        <label>Spesifikasi</label>
-        <input type="text" id="editSpesifikasi" />
-      </div>
-      <div>
-        <label>Jumlah</label>
+        <label for="editJumlah">Jumlah</label>
         <input type="number" id="editJumlah" />
       </div>
       <div>
-        <label>Satuan</label>
+        <label for="editSatuan">Satuan</label>
         <input type="text" id="editSatuan" />
       </div>
       <div class="actions">
@@ -154,7 +144,7 @@
   <!-- SheetJS untuk Export XLS -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <!-- Firebase & App -->
-  <script type="module" src="script-alat.js"></script>
+  <!-- Firebase & App (pastikan script.js ada di root dan bernama persis) -->
+  <script type="module" src="script.js"></script>
 </body>
 </html>
