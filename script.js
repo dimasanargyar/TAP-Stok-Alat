@@ -62,14 +62,14 @@ const editNama = document.getElementById("editNama");
 const editSpesifikasi = document.getElementById("editSpesifikasi");
 const editJumlah = document.getElementById("editJumlah");
 const editSatuan = document.getElementById("editSatuan");
-const btnUpdateBarang = document.getElementById("btnUpdateBarang");
+const btnUpdateAlat = document.getElementById("btnUpdateAlat");
 const btnCancelEdit = document.getElementById("btnCancelEdit");
 const editModal = document.getElementById("editModal");
 
 /* =======================================================
    STATE
 ======================================================= */
-let stokBarang = {};
+let stokAlat = {};
 let riwayat = [];
 let editMode = null; // { namaLama }
 
@@ -141,12 +141,12 @@ btnSimpan.addEventListener("click", () => {
   const satuan = inputSatuan.value.trim() || "-";
   const tanggal = inputTanggal.value;
 
-  if (!nama) return alert("Nama barang wajib diisi.");
+  if (!nama) return alert("Nama alat wajib diisi.");
   if (!tanggal) return alert("Tanggal wajib diisi.");
   if (Number.isNaN(jumlah)) return alert("Jumlah harus angka.");
   if (jumlah === 0) return alert("Jumlah tidak boleh 0.");
 
-  const stokLama = stokBarang[nama]?.jumlah || 0;
+  const stokLama = stokAlat[nama]?.jumlah || 0;
   const sisaBaru = stokLama + jumlah;
   if (jumlah < 0 && sisaBaru < 0) {
     return alert(`Stok tidak cukup. Stok saat ini: ${stokLama}`);
@@ -190,7 +190,7 @@ function renderStok() {
   tabelStokBody.innerHTML = "";
 
   const key = (searchStok.value || "").trim().toLowerCase();
-  const filtered = Object.keys(stokBarang).filter(nama =>
+  const filtered = Object.keys(stokAlat).filter(nama =>
     nama.toLowerCase().includes(key)
   );
 
@@ -202,7 +202,7 @@ function renderStok() {
   const isGuest = currentRole === "guest";
 
   filtered.sort().forEach(nama => {
-    const item = stokBarang[nama];
+    const item = stokAlat[nama];
     const jumlah = item?.jumlah ?? item ?? 0;
     const satuan = item?.satuan ?? "-";
     const spesifikasi = item?.spesifikasi ?? "-";
@@ -215,8 +215,8 @@ function renderStok() {
       <td>${escapeHtml(satuan)}</td>
       <td>
         ${isGuest ? "" : `
-          <button class="smallBtn" data-edit-barang="${escapeHtml(nama)}">Edit</button>
-          <button class="smallBtn" data-hapus-barang="${escapeHtml(nama)}">Hapus</button>
+          <button class="smallBtn" data-edit-alat="${escapeHtml(nama)}">Edit</button>
+          <button class="smallBtn" data-hapus-alat="${escapeHtml(nama)}">Hapus</button>
         `}
       </td>
     `;
@@ -225,14 +225,14 @@ function renderStok() {
 
   if (!currentRole || currentRole === "guest") return;
 
-  document.querySelectorAll("[data-hapus-barang]").forEach(btn => {
+  document.querySelectorAll("[data-hapus-alat]").forEach(btn => {
     btn.addEventListener("click", () => {
-      const namaBarang = btn.getAttribute("data-hapus-barang");
-      if (confirm(`Yakin ingin menghapus barang "${namaBarang}"?`)) {
-        remove(ref(db, `stok/${namaBarang}`));
+      const namaAlat = btn.getAttribute("data-hapus-alat");
+      if (confirm(`Yakin ingin menghapus alat "${namaAlat}"?`)) {
+        remove(ref(db, `stok/${namaAlat}`));
         onValue(ref(db, "riwayat"), snapshot => {
           snapshot.forEach(child => {
-            if (child.val().nama === namaBarang) {
+            if (child.val().nama === namaAlat) {
               remove(ref(db, `riwayat/${child.key}`));
             }
           });
@@ -241,15 +241,15 @@ function renderStok() {
     });
   });
 
-  document.querySelectorAll("[data-edit-barang]").forEach(btn => {
+  document.querySelectorAll("[data-edit-alat]").forEach(btn => {
     btn.addEventListener("click", () => {
-      const namaBarang = btn.getAttribute("data-edit-barang");
-      const item = stokBarang[namaBarang];
-      editNama.value = namaBarang;
+      const namaAlat = btn.getAttribute("data-edit-alat");
+      const item = stokAlat[namaAlat];
+      editNama.value = namaAlat;
       editSpesifikasi.value = item?.spesifikasi ?? "-";
       editJumlah.value = item?.jumlah ?? item ?? 0;
       editSatuan.value = item?.satuan ?? "-";
-      editMode = { namaLama: namaBarang };
+      editMode = { namaLama: namaAlat };
       editModal.style.display = "flex";
     });
   });
@@ -308,7 +308,7 @@ function renderRiwayat() {
    LISTENER REALTIME
 ======================================================= */
 onValue(ref(db, "stok"), snapshot => {
-  stokBarang = snapshot.val() || {};
+  stokAlat = snapshot.val() || {};
   renderStok();
 });
 
@@ -331,7 +331,7 @@ searchStok.addEventListener("input", renderStok);
 /* =======================================================
    EDIT MODAL
 ======================================================= */
-btnUpdateBarang.addEventListener("click", () => {
+btnUpdateAlat.addEventListener("click", () => {
   if (!editMode) return;
 
   const { namaLama } = editMode;
@@ -341,7 +341,7 @@ btnUpdateBarang.addEventListener("click", () => {
   const satuanBaru = editSatuan.value.trim() || "-";
   const tanggal = todayISO();
 
-  if (!namaBaru) return alert("Nama barang wajib diisi.");
+  if (!namaBaru) return alert("Nama alat wajib diisi.");
   if (Number.isNaN(jumlahBaru)) return alert("Jumlah harus angka.");
   if (jumlahBaru < 0) return alert("Jumlah tidak boleh negatif.");
 
@@ -386,9 +386,9 @@ btnCancelEdit.addEventListener("click", () => {
    EXPORT XLS
 ======================================================= */
 btnExportStok.addEventListener("click", () => {
-  const rows = [["Nama Barang", "Spesifikasi", "Jumlah", "Satuan"]];
-  Object.keys(stokBarang).sort().forEach(nama => {
-    const item = stokBarang[nama];
+  const rows = [["Nama Alat", "Spesifikasi", "Jumlah", "Satuan"]];
+  Object.keys(stokAlat).sort().forEach(nama => {
+    const item = stokAlat[nama];
     rows.push([nama, item?.spesifikasi ?? "-", item?.jumlah ?? item ?? 0, item?.satuan ?? "-"]);
   });
 
@@ -404,7 +404,7 @@ btnExportRiwayat.addEventListener("click", () => {
     alert("Pilih bulan terlebih dahulu.");
     return;
   }
-  const rows = [["Tanggal", "Nama Barang", "Spesifikasi", "Perubahan", "Sisa", "Satuan"]];
+  const rows = [["Tanggal", "Nama Alat", "Spesifikasi", "Perubahan", "Sisa", "Satuan"]];
   riwayat
     .filter(it => (it.tanggal || "").startsWith(bulan))
     .forEach(it => rows.push([it.tanggal, it.nama, it.spesifikasi ?? "-", it.perubahan, it.sisa, it.satuan ?? "-"]));
@@ -437,3 +437,4 @@ function escapeHtml(str) {
     '"': '&quot;', "'": '&#039;'
   })[m]);
 }
+
