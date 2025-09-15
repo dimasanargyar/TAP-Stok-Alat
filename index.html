@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Monitoring Stok Barang</title>
+  <title>Monitoring Stok Alat</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -40,12 +40,16 @@
   <!-- APP CONTENT (TERSEMBUNYI SEBELUM LOGIN) -->
   <div id="app" style="display:none;">
     <div class="card">
-      <h1>Monitoring Stok Barang</h1>
+      <h1>Monitoring Stok Alat</h1>
 
       <div class="grid">
         <div>
-          <label>Nama Barang</label>
-          <input type="text" id="inputNama" placeholder="Nama barang" />
+          <label>Nama Alat</label>
+          <input type="text" id="inputNama" placeholder="Nama alat" />
+        </div>
+        <div>
+          <label>Spesifikasi</label>
+          <input type="text" id="inputSpesifikasi" placeholder="Spesifikasi / detail" />
         </div>
         <div>
           <label>Jumlah (+/-)</label>
@@ -53,7 +57,7 @@
         </div>
         <div>
           <label>Satuan</label>
-          <input type="text" id="inputSatuan" placeholder="Contoh: pcs, box, kg" />
+          <input type="text" id="inputSatuan" placeholder="Contoh: unit, set" />
         </div>
         <div>
           <label>Tanggal</label>
@@ -68,12 +72,13 @@
     </div>
 
     <div class="card">
-      <h2>Daftar Stok</h2>
-      <input type="text" id="searchStok" placeholder="Cari nama barang" />
+      <h2>Daftar Stok Alat</h2>
+      <input type="text" id="searchStok" placeholder="Cari nama / spesifikasi" />
       <table id="tabelStok">
         <thead>
           <tr>
-            <th>Nama Barang</th>
+            <th>Nama Alat</th>
+            <th>Spesifikasi</th>
             <th>Jumlah</th>
             <th>Satuan</th>
             <th>Aksi</th>
@@ -88,7 +93,7 @@
 
     <div class="card">
       <h2>Riwayat Perubahan</h2>
-      <input type="text" id="searchBar" placeholder="Cari nama / tanggal" />
+      <input type="text" id="searchBar" placeholder="Cari nama / tanggal / spesifikasi" />
 
       <div class="grid" style="margin-top:8px;">
         <div>
@@ -106,7 +111,8 @@
           <tr>
             <th>No</th>
             <th>Tanggal</th>
-            <th>Nama Barang</th>
+            <th>Nama Alat</th>
+            <th>Spesifikasi</th>
             <th>Perubahan</th>
             <th>Sisa</th>
             <th>Satuan</th>
@@ -121,10 +127,14 @@
   <!-- Modal Edit -->
   <div id="editModal" class="modal" style="display:none;">
     <div class="modal-content card">
-      <h2>Edit Barang</h2>
+      <h2>Edit Alat</h2>
       <div>
-        <label>Nama Barang</label>
+        <label>Nama Alat</label>
         <input type="text" id="editNama" />
+      </div>
+      <div>
+        <label>Spesifikasi</label>
+        <input type="text" id="editSpesifikasi" />
       </div>
       <div>
         <label>Jumlah</label>
@@ -145,6 +155,6 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <!-- Firebase & App -->
-  <script type="module" src="script.js"></script>
+  <script type="module" src="script-alat.js"></script>
 </body>
 </html>
