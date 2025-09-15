@@ -26,7 +26,7 @@ const db = getDatabase(app);
 ======================================================= */
 const CREDENTIALS = {
   username: "admin",
-  password: "gudangtap"
+  password: "alattap"
 };
 
 let currentRole = null; // 'admin' | 'guest'
@@ -437,4 +437,5 @@ function escapeHtml(str) {
     '"': '&quot;', "'": '&#039;'
   })[m]);
 }
+
 
