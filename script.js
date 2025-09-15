@@ -7,14 +7,14 @@ import { getDatabase, ref, set, push, remove, onValue, update }
    FIREBASE CONFIG
 ======================================================= */
 const firebaseConfig = {
-  apiKey: "AIzaSyAXwrQEVJpDXSsWSF-QEcEtwzl08khw_YI",
-  authDomain: "stok-barang-d9ea6.firebaseapp.com",
-  databaseURL: "https://stok-barang-d9ea6-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "stok-barang-d9ea6",
-  storageBucket: "stok-barang-d9ea6.firebasestorage.app",
-  messagingSenderId: "761724837703",
-  appId: "1:761724837703:web:d67a7a537fd81972317662",
-  measurementId: "G-VBDWX1E7H3"
+  apiKey: "AIzaSyCaOQPlCQ8oBNp1H2I1Frf6dN5lUmzBGN4",
+  authDomain: "stok-alat.firebaseapp.com",
+  databaseURL: "https://stok-alat-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "stok-alat",
+  storageBucket: "stok-alat.firebasestorage.app",
+  messagingSenderId: "725607746091",
+  appId: "1:725607746091:web:284c62588307ce7fb4f86e",
+  measurementId: "G-BSZY4KFF0C"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -26,7 +26,7 @@ const db = getDatabase(app);
 ======================================================= */
 const CREDENTIALS = {
   username: "admin",
-  password: "gudangtap"
+  password: "alattap"
 };
 
 let currentRole = null; // 'admin' | 'guest'
@@ -419,4 +419,5 @@ function escapeHtml(str) {
     '&': '&amp;', '<': '&lt;', '>': '&gt;',
     '"': '&quot;', "'": '&#039;'
   })[m]);
+
 }
