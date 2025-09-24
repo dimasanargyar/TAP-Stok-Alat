@@ -137,8 +137,8 @@ btnSimpan.addEventListener("click", () => {
 
   const nama = inputNama.value.trim();
   const spesifikasi = inputSpesifikasi.value.trim() || "-";
-  const perubahan = jumlah;
   const jumlah = Number(inputJumlah.value);
+  const perubahan = jumlah;
   const satuan = inputSatuan.value.trim() || "-";
   const tanggal = inputTanggal.value;
 
@@ -159,7 +159,7 @@ btnSimpan.addEventListener("click", () => {
         tanggal,
         nama,
         spesifikasi,
-        perubahan,
+        perubahan: jumlah,
         sisa: sisaBaru,
         satuan
       });
@@ -439,6 +439,7 @@ function escapeHtml(str) {
     '"': '&quot;', "'": '&#039;'
   })[m]);
 }
+
 
 
 
