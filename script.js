@@ -158,7 +158,7 @@ btnSimpan.addEventListener("click", () => {
         tanggal,
         nama,
         spesifikasi,
-        perubahan: sisaBaru,
+        perubahan: jumlah,
         sisa: sisaBaru,
         satuan
       });
@@ -437,6 +437,7 @@ function escapeHtml(str) {
     '"': '&quot;', "'": '&#039;'
   })[m]);
 }
+
 
 
 
