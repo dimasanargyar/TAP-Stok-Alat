@@ -356,18 +356,25 @@ btnUpdateAlat.addEventListener("click", () => {
     })
     .then(() => {
       onValue(ref(db, "riwayat"), snapshot => {
+        let lastKey = null;
         snapshot.forEach(child => {
           if (child.val().nama === namaLama) {
-            update(ref(db, `riwayat/${child.key}`), {
-              nama: namaBaru,
-              spesifikasi: spesifikasiBaru,
-              perubahan: jumlahBaru,
-              sisa: jumlahBaru,
-              satuan: satuanBaru
-            });
+            lastKey = child.key;
           }
         });
+        
+        if (lastKey) {
+          update(ref(db, `riwayat/${lastKey}`), {
+            nama: namaBaru,
+            spesifikasi: spesifikasiBaru,
+            perubahan: jumlahBaru,
+            sisa: jumlahBaru,
+            satuan: satuanBaru,
+            tanggal: tanggal
+          });
+        }
       }, { onlyOnce: true });
+
 
       alert("✅ Data berhasil diperbarui.");
       editMode = null;
@@ -439,6 +446,7 @@ function escapeHtml(str) {
     '"': '&quot;', "'": '&#039;'
   })[m]);
 }
+
 
 
 
