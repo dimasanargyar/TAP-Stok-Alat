@@ -47,6 +47,7 @@ const inputSpesifikasi = document.getElementById("inputSpesifikasi");
 const inputJumlah = document.getElementById("inputJumlah");
 const inputSatuan = document.getElementById("inputSatuan");
 const inputTanggal = document.getElementById("inputTanggal");
+const inputKeterangan = document.getElementById("inputKeterangan");
 const btnSimpan = document.getElementById("btnSimpan");
 const btnResetForm = document.getElementById("btnResetForm");
 const searchBar = document.getElementById("searchBar");
@@ -62,6 +63,7 @@ const editNama = document.getElementById("editNama");
 const editSpesifikasi = document.getElementById("editSpesifikasi");
 const editJumlah = document.getElementById("editJumlah");
 const editSatuan = document.getElementById("editSatuan");
+const editKeterangan = document.getElementById("editKeterangan");
 const btnUpdateAlat = document.getElementById("btnUpdateAlat");
 const btnCancelEdit = document.getElementById("btnCancelEdit");
 const editModal = document.getElementById("editModal");
@@ -140,6 +142,7 @@ btnSimpan.addEventListener("click", () => {
   const jumlah = Number(inputJumlah.value);
   const satuan = inputSatuan.value.trim() || "-";
   const tanggal = inputTanggal.value;
+  const keterangan = inputKeterangan.value.trim() || "-";
 
   if (!nama) return alert("Nama alat wajib diisi.");
   if (!tanggal) return alert("Tanggal wajib diisi.");
@@ -160,7 +163,8 @@ btnSimpan.addEventListener("click", () => {
         spesifikasi,
         perubahan: jumlah,
         sisa: sisaBaru,
-        satuan
+        satuan,
+        keterangan
       });
     })
     .then(() => {
@@ -181,6 +185,8 @@ function resetFormInputs() {
   inputJumlah.value = "";
   inputSatuan.value = "";
   inputTanggal.value = "";
+  inputKeterangan.value = "";
+
 }
 
 /* =======================================================
@@ -206,6 +212,7 @@ function renderStok() {
     const jumlah = item?.jumlah ?? item ?? 0;
     const satuan = item?.satuan ?? "-";
     const spesifikasi = item?.spesifikasi ?? "-";
+    const keterangan = item?.keterangan ?? "-";
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -213,6 +220,7 @@ function renderStok() {
       <td>${escapeHtml(spesifikasi)}</td>
       <td>${jumlah}</td>
       <td>${escapeHtml(satuan)}</td>
+      <td>${escapeHtml(keterangan)}</td>
       <td>
         ${isGuest ? "" : `
           <button class="smallBtn" data-edit-alat="${escapeHtml(nama)}">Edit</button>
@@ -249,6 +257,7 @@ function renderStok() {
       editSpesifikasi.value = item?.spesifikasi ?? "-";
       editJumlah.value = item?.jumlah ?? item ?? 0;
       editSatuan.value = item?.satuan ?? "-";
+      editKeterangan.value = item?.keterangan ?? "-";
       editMode = { namaLama: namaAlat };
       editModal.style.display = "flex";
     });
@@ -287,6 +296,7 @@ function renderRiwayat() {
       <td>${it.perubahan > 0 ? "+" + it.perubahan : it.perubahan}</td>
       <td>${it.sisa}</td>
       <td>${escapeHtml(it.satuan ?? "-")}</td>
+      <td>${escapeHtml(it.keterangan ?? "-")}</td>
       <td>${isGuest ? "" : `<button class="smallBtn" data-id="${it.id}">Hapus</button>`}</td>
     `;
     tabelRiwayatBody.appendChild(tr);
@@ -340,6 +350,7 @@ btnUpdateAlat.addEventListener("click", () => {
   const jumlahBaru = Number(editJumlah.value);
   const perubahan = jumlahBaru;
   const satuanBaru = editSatuan.value.trim() || "-";
+  const keteranganBaru = editKeterangan.value.trim() || "-";
   const tanggal = todayISO();
 
   if (!namaBaru) return alert("Nama alat wajib diisi.");
@@ -351,7 +362,8 @@ btnUpdateAlat.addEventListener("click", () => {
       return set(ref(db, `stok/${namaBaru}`), {
         jumlah: jumlahBaru,
         satuan: satuanBaru,
-        spesifikasi: spesifikasiBaru
+        spesifikasi: spesifikasiBaru,
+        keterangan: keteranganBaru
       });
     })
     .then(() => {
@@ -446,6 +458,7 @@ function escapeHtml(str) {
     '"': '&quot;', "'": '&#039;'
   })[m]);
 }
+
 
 
 
