@@ -137,6 +137,7 @@ btnSimpan.addEventListener("click", () => {
 
   const nama = inputNama.value.trim();
   const spesifikasi = inputSpesifikasi.value.trim() || "-";
+  const perubahan = jumlah;
   const jumlah = Number(inputJumlah.value);
   const satuan = inputSatuan.value.trim() || "-";
   const tanggal = inputTanggal.value;
@@ -158,7 +159,7 @@ btnSimpan.addEventListener("click", () => {
         tanggal,
         nama,
         spesifikasi,
-        perubahan: jumlah,
+        perubahan,
         sisa: sisaBaru,
         satuan
       });
@@ -360,6 +361,7 @@ btnUpdateAlat.addEventListener("click", () => {
             update(ref(db, `riwayat/${child.key}`), {
               nama: namaBaru,
               spesifikasi: spesifikasiBaru,
+              perubahan: jumlahBaru,
               sisa: jumlahBaru,
               satuan: satuanBaru
             });
@@ -437,9 +439,6 @@ function escapeHtml(str) {
     '"': '&quot;', "'": '&#039;'
   })[m]);
 }
-
-
-
 
 
 
