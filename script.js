@@ -155,7 +155,7 @@ btnSimpan.addEventListener("click", () => {
     return alert(`Stok tidak cukup. Stok saat ini: ${stokLama}`);
   }
 
-  set(ref(db, `stok/${nama}`), { jumlah: sisaBaru, satuan, spesifikasi })
+  set(ref(db, `stok/${nama}`), { jumlah: sisaBaru, satuan, spesifikasi, keterangan })
     .then(() => {
       return push(ref(db, "riwayat"), {
         tanggal,
@@ -458,6 +458,7 @@ function escapeHtml(str) {
     '"': '&quot;', "'": '&#039;'
   })[m]);
 }
+
 
 
 
